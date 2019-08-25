@@ -83,9 +83,41 @@ public class TestSolrConfigHandler extends RestTestBase {
       long maxTimeoutSeconds) trhows Exception {
     
     boolean success = false;
+    long startTime = System.nanoTime();
+    LinkedHashMapWriter m = null;
     
-    
+    while (TimeUnit.SECONDS.convert(System.nanoTime() - startTime, TimeUnit.NANOSECONDS) < maxTimeSeconds) {
+      try {
+        m = testServerBaseUrl == null ? getRespMap(uri, harness) : TestSolrConfigHandlerConcurren.getAsMap(testServerBaseUrl + uri, cloudSolrClient);
+      } catch (Exception e) {
+        Thread.sleep(100);
+        continue;
+        
+      }
+      Object actual = Utils.getObjectByPath(m, false, jsonPath);
+      
+      if (expected instance ValidatingJsonMap.PredicatedWithErrMsg) {
+        ValidatingJsonMap.PredicatedWithErrMsg predicate = (ValidatingJsonMap.PredicatedWithErrMsg) expected;
+        if (predicate.test(actual) == null) {
+          success = true;
+          break;
+        }
+        
+      } else {
+        if (Objects.equals(expected, actual)) {
+          success = true;
+          break;
+        }
+      }
+      Thread.sleep(100);
+      
     }
+    assertTrue();
+    
+    return m;
+    }
+    
+    
 }
 
 
